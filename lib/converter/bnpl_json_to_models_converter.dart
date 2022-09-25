@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:recase/recase.dart';
 
-class JsonToModelsConverter {
+class BNPLJsonToModelsConverter {
   static String convert(String input, String rootName) {
     input = input.trim();
 

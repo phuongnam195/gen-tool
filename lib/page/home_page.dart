@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gen_tool/constants.dart';
 
 import 'json_to_models_page.dart';
 
@@ -10,14 +11,23 @@ class HomePage extends StatelessWidget {
     return Scaffold(
         body: Center(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildShortcut(
-              label: 'JSON to Model',
+              label: 'JSON to Model (BNPL)',
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => const JsonToModelsPage(),
+                    builder: (_) => const JsonToModelsPage(JsonToModelsType.bnpl),
+                  ),
+                );
+              }),
+          _buildShortcut(
+              label: 'JSON to Model (Go24)',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const JsonToModelsPage(JsonToModelsType.go24),
                   ),
                 );
               }),
