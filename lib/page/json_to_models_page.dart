@@ -1,6 +1,7 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gen_tool/converter/lt_json_to_models_converter.dart';
 import 'package:json_editor/json_editor.dart';
 
 import '../constants.dart';
@@ -22,10 +23,22 @@ class _JsonToModelsPageState extends State<JsonToModelsPage> {
   String _model = '';
   bool _showIconCopy = false;
 
+  String get title {
+    switch (widget.type) {
+      case JsonToModelsType.bnpl:
+        return 'BNPL';
+      case JsonToModelsType.go24:
+        return 'GO24';
+
+      case JsonToModelsType.lt:
+        return 'LetTutor';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Model to JSON (${widget.type == JsonToModelsType.bnpl ? 'BNPL' : 'GO24'})')),
+      appBar: AppBar(title: Text('Model to JSON ($title)')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -142,10 +155,16 @@ class _JsonToModelsPageState extends State<JsonToModelsPage> {
 
   void _onConvert() {
     setState(() {
-      if (widget.type == JsonToModelsType.bnpl) {
-        _model = BNPLJsonToModelsConverter.convert(_json, _nameTec.text);
-      } else if (widget.type == JsonToModelsType.go24) {
-        _model = Go24JsonToModelsConverter.convert(_json, _nameTec.text);
+      switch (widget.type) {
+        case JsonToModelsType.bnpl:
+          _model = BNPLJsonToModelsConverter.convert(_json, _nameTec.text);
+          break;
+        case JsonToModelsType.go24:
+          _model = Go24JsonToModelsConverter.convert(_json, _nameTec.text);
+          break;
+        case JsonToModelsType.lt:
+          _model = LTJsonToModelsConverter.convert(_json, _nameTec.text);
+          break;
       }
     });
   }

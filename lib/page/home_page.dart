@@ -31,6 +31,15 @@ class HomePage extends StatelessWidget {
                   ),
                 );
               }),
+          _buildShortcut(
+              label: 'JSON to Model (LetTutor)',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const JsonToModelsPage(JsonToModelsType.lt),
+                  ),
+                );
+              }),
         ],
       ),
     ));
