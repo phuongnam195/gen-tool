@@ -2,44 +2,62 @@ import 'dart:convert';
 
 import 'package:recase/recase.dart';
 
-class LTJsonToModelsConverter {
-  static String convert(String input, String rootName) {
+import 'interface.dart';
+
+class TBEMJsonToModelsConverter implements JsonToModelsConverter {
+  @override
+  String convert(String input, String rootName) {
     input = input.trim();
 
     String output = '';
 
     output += "import 'package:json_annotation/json_annotation.dart';\n";
-    output += "import 'package:let_tutor/core/base_model.dart';\n";
+    output += "import 'package:tbox_event_manager_flutter/core/network/models/api_error.dart';\n";
+    output += "import 'package:tbox_event_manager_flutter/core/network/models/base_response.dart';\n";
     output += '\n';
-    output += "part '${rootName.snakeCase}.g.dart';\n";
-    output += _buildClassCode(rootName.pascalCase, Map.from(jsonDecode(input)));
+    output += "part '${rootName.snakeCase}_response.g.dart';\n";
+    output += _buildRootClassCode(rootName);
+    output += _buildClassCode('${rootName.pascalCase}Response', Map.from(jsonDecode(input)));
 
     return output;
   }
 
-  static String _buildClassCode(String className, Map<String, dynamic> map) {
+  String _buildRootClassCode(String rootName) {
+    String result = '';
+
+    final className = '${rootName.pascalCase}Response';
+
+    result += '\n';
+    result += '@JsonSerializable(explicitToJson: true)\n';
+    result += 'class $className extends BaseDataResponse {\n';
+    result += '  $className? data;\n';
+    result += '\n';
+    result +=
+        '  $className({this.data, bool? success, String? message, ApiError? err, int? status_code,}) : super(success, message, err, status_code);\n';
+    result += '\n';
+    result += '  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);\n';
+    result += '\n';
+    result += '  Map<String, dynamic> toJson() => _\$${className}ToJson(this);\n';
+    result += '}\n';
+
+    return result;
+  }
+
+  String _buildClassCode(String className, Map<String, dynamic> map) {
     String result = '';
 
     List<String> listFieldName = [];
     List<String> listSubClassCode = [];
 
-    bool isExtends = false;
-
-    if (map.containsKey('createdAt')) {
-      isExtends = true;
-      map.remove('createdAt');
-      map.remove('updatedAt');
-      map.remove('deletedAt');
-    }
     result += '\n';
-    result += '@JsonSerializable()\n';
-    result += 'class $className ${isExtends ? 'extends BaseModel ' : ''}{\n';
+    result += '@JsonSerializable(explicitToJson: true)\n';
+    result += 'class $className {\n';
     for (var key in map.keys) {
       final value = map[key];
       var fieldName = key.camelCase;
       listFieldName.add(fieldName);
-      if (key != key.camelCase) {
-        result += "  @JsonKey(name: '$key')\n";
+      if (key.snakeCase.contains('_')) {
+        result += "  @JsonKey(name: '${fieldName.snakeCase}')\n";
       }
       if (value is String) {
         result += '  final String? $fieldName;\n';
@@ -56,7 +74,7 @@ class LTJsonToModelsConverter {
           if (elementType[elementType.length - 1] == 's') {
             elementType = elementType.substring(0, elementType.length - 1);
           }
-          elementType = elementType.pascalCase;
+          elementType = '${elementType.pascalCase}Response';
           result += '  final List<$elementType>? $fieldName;\n';
           final elementClassCode = _buildClassCode(elementType, value.first);
           listSubClassCode.add(elementClassCode);
@@ -72,20 +90,14 @@ class LTJsonToModelsConverter {
       } else {
         Map<String, dynamic> valueMap = Map.from(value);
         String type = fieldName;
-        type = type.pascalCase;
+        type = '${type.pascalCase}Response';
         result += '  $type? $fieldName;\n';
         final elementClassCode = _buildClassCode(type, valueMap);
         listSubClassCode.add(elementClassCode);
       }
     }
     result += '\n';
-    result += '  $className({${listFieldName.map((e) => 'this.$e').toList().join(', ')},';
-    if (isExtends) {
-      result +=
-          'DateTime? createdAt, DateTime? updatedAt, DateTime? deletedAt,}) : super(createdAt,updatedAt,deletedAt,);\n';
-    } else {
-      result += '});\n';
-    }
+    result += '  $className({${listFieldName.map((e) => 'this.$e, ').toList().join(', ')}});\n';
     result += '\n';
     result += '  factory $className.fromJson(Map<String, dynamic> json) => _\$${className}FromJson(json);\n';
     result += '\n';

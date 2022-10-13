@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:recase/recase.dart';
 
-class Go24JsonToModelsConverter {
-  static String convert(String input, String rootName) {
+import 'interface.dart';
+
+class Go24JsonToModelsConverter implements JsonToModelsConverter {
+  @override
+  String convert(String input, String rootName) {
     input = input.trim();
 
     String output = '';
@@ -16,7 +19,7 @@ class Go24JsonToModelsConverter {
     return output;
   }
 
-  static String _buildClassCode(String className, Map<String, dynamic> map) {
+  String _buildClassCode(String className, Map<String, dynamic> map) {
     String result = '';
 
     List<String> listFieldName = [];

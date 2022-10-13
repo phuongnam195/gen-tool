@@ -1,17 +1,17 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gen_tool/converter/lt_json_to_models_converter.dart';
+import 'package:gen_tool/converter/json_to_models/bnpl_algo.dart';
+import 'package:gen_tool/converter/json_to_models/go24_algo.dart';
+import 'package:gen_tool/converter/json_to_models/interface.dart';
+import 'package:gen_tool/converter/json_to_models/lt_algo.dart';
+import 'package:gen_tool/models/j2m.dart';
 import 'package:json_editor/json_editor.dart';
 
-import '../constants.dart';
-import '../converter/bnpl_json_to_models_converter.dart';
-import '../converter/go24_json_to_models_converter.dart';
-
 class JsonToModelsPage extends StatefulWidget {
-  const JsonToModelsPage(this.type, {Key? key}) : super(key: key);
+  const JsonToModelsPage(this.j2m, {Key? key}) : super(key: key);
 
-  final JsonToModelsType type;
+  final J2M j2m;
 
   @override
   State<JsonToModelsPage> createState() => _JsonToModelsPageState();
@@ -23,22 +23,10 @@ class _JsonToModelsPageState extends State<JsonToModelsPage> {
   String _model = '';
   bool _showIconCopy = false;
 
-  String get title {
-    switch (widget.type) {
-      case JsonToModelsType.bnpl:
-        return 'BNPL';
-      case JsonToModelsType.go24:
-        return 'GO24';
-
-      case JsonToModelsType.lt:
-        return 'LetTutor';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Model to JSON ($title)')),
+      appBar: AppBar(title: Text('Model to JSON (${widget.j2m.name})')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -155,17 +143,7 @@ class _JsonToModelsPageState extends State<JsonToModelsPage> {
 
   void _onConvert() {
     setState(() {
-      switch (widget.type) {
-        case JsonToModelsType.bnpl:
-          _model = BNPLJsonToModelsConverter.convert(_json, _nameTec.text);
-          break;
-        case JsonToModelsType.go24:
-          _model = Go24JsonToModelsConverter.convert(_json, _nameTec.text);
-          break;
-        case JsonToModelsType.lt:
-          _model = LTJsonToModelsConverter.convert(_json, _nameTec.text);
-          break;
-      }
+      _model = widget.j2m.converter.convert(_json, _nameTec.text);
     });
   }
 }

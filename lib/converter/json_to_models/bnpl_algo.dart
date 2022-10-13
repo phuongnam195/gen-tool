@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:recase/recase.dart';
 
-class BNPLJsonToModelsConverter {
-  static String convert(String input, String rootName) {
+import 'interface.dart';
+
+class BNPLJsonToModelsConverter implements JsonToModelsConverter {
+  @override
+  String convert(String input, String rootName) {
     input = input.trim();
 
     String output = '';
@@ -17,7 +20,7 @@ class BNPLJsonToModelsConverter {
     return output;
   }
 
-  static String _buildRootClassCode(String rootName) {
+  String _buildRootClassCode(String rootName) {
     String result = '';
 
     final className = '${rootName.pascalCase}Response';
@@ -37,7 +40,7 @@ class BNPLJsonToModelsConverter {
     return result;
   }
 
-  static String _buildClassCode(String className, Map<String, dynamic> map) {
+  String _buildClassCode(String className, Map<String, dynamic> map) {
     String result = '';
 
     List<String> listFieldName = [];

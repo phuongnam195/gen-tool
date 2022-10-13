@@ -13,33 +13,16 @@ class HomePage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildShortcut(
-              label: 'JSON to Model (BNPL)',
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const JsonToModelsPage(JsonToModelsType.bnpl),
-                  ),
-                );
-              }),
-          _buildShortcut(
-              label: 'JSON to Model (Go24)',
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const JsonToModelsPage(JsonToModelsType.go24),
-                  ),
-                );
-              }),
-          _buildShortcut(
-              label: 'JSON to Model (LetTutor)',
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const JsonToModelsPage(JsonToModelsType.lt),
-                  ),
-                );
-              }),
+          for (var j2m in jsonToModels)
+            _buildShortcut(
+                label: 'JSON to Model (${j2m.shortName})',
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => JsonToModelsPage(j2m),
+                    ),
+                  );
+                }),
         ],
       ),
     ));
